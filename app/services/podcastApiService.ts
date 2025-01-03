@@ -17,7 +17,7 @@ export class PodcastApiService {
     pdfContent: PdfContent
   ): Promise<{ podcastId: string}> {
     try {
-      const response = await fetch(`https://${process.env.NEXT_PUBLIC_API_URL}/podcasts`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/podcasts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

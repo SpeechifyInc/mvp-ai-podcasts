@@ -35,7 +35,7 @@ export const usePodcastSocket = ({ podcastId, onTranscript, onAudio, onInterrupt
   }, []);
 
   useEffect(() => {
-    const socket = io(`wss://${process.env.NEXT_PUBLIC_API_URL}/podcasts`, {
+    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}/podcasts`, {
       query: { podcastId },
     });
 

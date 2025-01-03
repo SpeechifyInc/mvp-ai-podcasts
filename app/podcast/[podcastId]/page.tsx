@@ -61,7 +61,7 @@ export default function PodcastView() {
   useEffect(() => {
     const fetchPodcastData = async (): Promise<void> => {
       try {
-        const response = await fetch(`https://${process.env.NEXT_PUBLIC_API_URL}/podcasts/${podcastId}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/podcasts/${podcastId}`);
         const data: PodcastData = await response.json();
         setPodcastData(data);
       } catch (error) {
@@ -85,7 +85,6 @@ const [currentSpeaker, setCurrentSpeaker] = useState<{
 } | undefined>(undefined);
 
 useEffect(() => {
-    console.log('Checking current speaker');
     const lastMessage = transcriptMessages
         .filter(message => interactive || playedMessageIds.has(message.id))
         .sort((a, b) => b.timestamp.localeCompare(a.timestamp))[0];

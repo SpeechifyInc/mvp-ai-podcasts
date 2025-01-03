@@ -45,6 +45,10 @@ export const useAudioController = (
     const initializeAudioPlayer = useCallback(async () => {
         audioPlayer.current = new AudioPlayer({
             onPlaybackEnd: () => {
+                if (!playStartTime.current) {
+                    // If playStartTime is null, it means playback was stopped manually
+                    return;
+                }
                 currentFinishCallback.current = () => {
                     if (currentChunkIndex.current < audioMessages.length - 1) {
                         playNextChunk();
