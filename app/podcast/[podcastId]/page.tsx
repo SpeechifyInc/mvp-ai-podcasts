@@ -8,19 +8,13 @@ import { usePodcastSocket } from '../../hooks/usePodcastSocket';
 import { AudioChunk, Participant, PodcastMessage } from '../../types/podcast';
 import { useAudioRecorder } from '../../hooks/useAudioRecorder';
 
-interface PodcastViewProps {
-  params: {
-    podcastId: string;
-  };
-}
-
 interface PodcastData {
   readonly length: number;
   readonly participants: Participant[];
   readonly interactive: boolean;
 }
 
-export default function PodcastView({ params }: PodcastViewProps) {
+export default function PodcastView() {
   const [transcriptMessages, setTranscriptMessages] = useState<PodcastMessage[]>([]);
   const [audioMessages, setAudioMessages] = useState<AudioChunk[]>([]);
   const [isLoading, setIsLoading] = useState(true);

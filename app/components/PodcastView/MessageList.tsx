@@ -119,7 +119,12 @@ export const MessageList: React.FC<MessageListProps> = ({
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="rounded-full h-8 w-8 border-b-2 border-[#2F43FA]" 
+          style={{
+            width: '2rem',
+            height: '2rem',
+            borderRadius: '50%',
+            borderBottom: '2px solid #2F43FA'
+          }}
         />
         <p className="text-gray-600 font-medium">Generating immersive podcast...</p>
       </div>
@@ -148,11 +153,11 @@ export const MessageList: React.FC<MessageListProps> = ({
                 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="flex items-start gap-4"
+                style={{ display: 'flex', alignItems: 'start', gap: '1rem' }}
               >
                 {participant && (
                   <motion.div 
-                    className="flex-shrink-0"
+                    style={{ flexShrink: 0 }}
                     animate={isLatestMessage ? {
                       scale: [1, 1.05, 1],
                       borderColor: ['#2F43FA', '#4F63FA', '#2F43FA']
@@ -168,26 +173,40 @@ export const MessageList: React.FC<MessageListProps> = ({
                       alt={participant.name}
                       width={56}
                       height={56}
-                      className={`rounded-full shadow-md ${
-                        isLatestMessage ? 'border-2 border-[#2F43FA]' : ''
-                      }`}
+                      style={{
+                        borderRadius: '9999px',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        border: isLatestMessage ? '2px solid #2F43FA' : 'none'
+                      }}
                     />
                   </motion.div>
                 )}
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-700 mb-2 ml-1">
+                <div style={{ flex: 1 }}>
+                  <p style={{ 
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    color: '#374151',
+                    marginBottom: '0.5rem',
+                    marginLeft: '0.25rem'
+                  }}>
                     {participant?.name || message.speaker}
                   </p>
-                  <div className={`relative p-4 rounded-2xl ${
-                    message.speaker === 'podcast'
-                      ? 'bg-blue-50 rounded-tr-none'
-                      : 'bg-gray-50 rounded-tl-none'
-                  } shadow-sm`}>
-                    <div className={`absolute top-0 ${
-                      message.speaker === 'podcast' ? 'right-0' : 'left-0'
-                    } w-4 h-4 ${
-                      message.speaker === 'podcast' ? 'bg-blue-50' : 'bg-gray-50'
-                    }`} style={{
+                  <div style={{
+                    position: 'relative',
+                    padding: '1rem',
+                    borderRadius: '1rem',
+                    backgroundColor: message.speaker === 'podcast' ? '#EFF6FF' : '#F9FAFB',
+                    borderTopRightRadius: message.speaker === 'podcast' ? 0 : '1rem',
+                    borderTopLeftRadius: message.speaker === 'podcast' ? '1rem' : 0,
+                    boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)'
+                  }}>
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      [message.speaker === 'podcast' ? 'right' : 'left']: 0,
+                      width: '1rem',
+                      height: '1rem',
+                      backgroundColor: message.speaker === 'podcast' ? '#EFF6FF' : '#F9FAFB',
                       clipPath: message.speaker === 'podcast' 
                         ? 'polygon(0 0, 100% 0, 100% 100%)'
                         : 'polygon(0 0, 100% 0, 0 100%)'
@@ -197,12 +216,12 @@ export const MessageList: React.FC<MessageListProps> = ({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5 }}
-                        className="text-gray-800 text-lg"
+                        style={{ color: '#1F2937', fontSize: '1.125rem' }}
                       >
                         <TypewriterText text={message.text} />
                       </motion.div>
                     ) : (
-                      <p className="text-gray-800 text-lg">{message.text}</p>
+                      <p style={{ color: '#1F2937', fontSize: '1.125rem' }}>{message.text}</p>
                     )}
                   </div>
                 </div>
@@ -217,17 +236,20 @@ export const MessageList: React.FC<MessageListProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="flex items-start gap-4"
+              style={{ display: 'flex', alignItems: 'start', gap: '1rem' }}
             >
-              <div className="flex-shrink-0">
+              <div style={{ flexShrink: 0 }}>
                 {humanParticipant ? (
-                  <div className="relative">
+                  <div style={{ position: 'relative' }}>
                     <Image
                       src={humanParticipant.imageUrl}
                       alt={humanParticipant.name}
                       width={56}
                       height={56}
-                      className="rounded-full shadow-md"
+                      style={{
+                        borderRadius: '9999px',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                      }}
                     />
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
@@ -236,11 +258,28 @@ export const MessageList: React.FC<MessageListProps> = ({
                         repeat: Infinity,
                         ease: "easeInOut"
                       }}
-                      className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 shadow-md"
+                      style={{
+                        position: 'absolute',
+                        top: '-0.25rem',
+                        right: '-0.25rem',
+                        width: '1rem',
+                        height: '1rem',
+                        borderRadius: '9999px',
+                        backgroundColor: '#EF4444',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                      }}
                     />
                   </div>
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                  <div style={{
+                    width: '2.5rem',
+                    height: '2.5rem',
+                    borderRadius: '9999px',
+                    backgroundColor: '#E5E7EB',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{
@@ -248,21 +287,44 @@ export const MessageList: React.FC<MessageListProps> = ({
                         repeat: Infinity,
                         ease: "easeInOut"
                       }}
-                      className="w-4 h-4 rounded-full bg-red-500"
+                      style={{
+                        width: '1rem',
+                        height: '1rem',
+                        borderRadius: '9999px',
+                        backgroundColor: '#EF4444'
+                      }}
                     />
                   </div>
                 )}
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-700 mb-2 ml-1">
+              <div style={{ flex: 1 }}>
+                <p style={{
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  color: '#374151',
+                  marginBottom: '0.5rem',
+                  marginLeft: '0.25rem'
+                }}>
                   {humanParticipant?.name || 'Recording...'}
                 </p>
-                <div className="relative p-4 rounded-2xl bg-gray-50 rounded-tl-none shadow-sm">
-                  <div className="absolute top-0 left-0 w-4 h-4 bg-gray-50"
-                    style={{
-                      clipPath: 'polygon(0 0, 100% 0, 0 100%)'
-                    }} />
-                  <div className="flex gap-2">
+                <div style={{
+                  position: 'relative',
+                  padding: '1rem',
+                  borderRadius: '1rem',
+                  backgroundColor: '#F9FAFB',
+                  borderTopLeftRadius: 0,
+                  boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '1rem',
+                    height: '1rem',
+                    backgroundColor: '#F9FAFB',
+                    clipPath: 'polygon(0 0, 100% 0, 0 100%)'
+                  }} />
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
                     {[0, 1, 2].map((i) => (
                       <motion.div
                         key={i}
@@ -273,7 +335,12 @@ export const MessageList: React.FC<MessageListProps> = ({
                           delay: i * 0.2,
                           ease: "easeInOut"
                         }}
-                        className="w-3 h-3 rounded-full bg-gray-400"
+                        style={{
+                          width: '0.75rem',
+                          height: '0.75rem',
+                          borderRadius: '9999px',
+                          backgroundColor: '#9CA3AF'
+                        }}
                       />
                     ))}
                   </div>
