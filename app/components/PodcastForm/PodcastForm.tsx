@@ -104,15 +104,21 @@ export const PodcastForm: React.FC = () => {
               <p className="text-gray-500 text-sm">Should the show include audience interaction?</p>
             </div>
             <div className="flex gap-4">
-              {interactiveOptions.map((option) => (
                 <SelectionButton
-                  key={option}
-                  selected={(formData.interactive ? 'yes' : 'no') === option}
-                  onClick={() => setFormData({ ...formData, interactive: option === 'yes' })}
+                  key={'yes'}
+                  selected={formData.interactive}
+                  onClick={() => setFormData({ ...formData, interactive: true })}
+                  disabled={true}
                 >
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
+                  Yes
                 </SelectionButton>
-              ))}
+                <SelectionButton
+                  key={'no'}
+                  selected={!formData.interactive}
+                  onClick={() => setFormData({ ...formData, interactive: false })}
+                >
+                  No
+                </SelectionButton>
             </div>
           </div>
           <SpeakerAvatars 
