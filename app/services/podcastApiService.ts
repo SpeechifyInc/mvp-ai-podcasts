@@ -18,7 +18,7 @@ export class PodcastApiService {
     pdfContent: PdfContent
   ): Promise<{ podcastId: string}> {
     try {
-      const response = await fetch(this.API_URL, {
+      const response = await fetch(`${this.API_URL}/podcasts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
