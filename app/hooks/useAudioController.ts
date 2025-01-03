@@ -11,6 +11,7 @@ interface AudioState {
     isInteractive: boolean;
     isReady: boolean;
     interrupted: boolean;
+    manuallyPaused: boolean;
 }
 
 export const playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const;
@@ -25,12 +26,13 @@ export const useAudioController = (
 ) => {
     const [audioState, setAudioState] = useState<AudioState>({
         currentTime: 0,
-        duration: 185,
+        duration: 0,
         isPlaying: false,
         playbackRate: 1,
         isInteractive,
         isReady: false,
-        interrupted: false
+        interrupted: false,
+        manuallyPaused: false
     });
 
     const [playedChunkIds, setPlayedChunkIds] = useState<Set<string>>(new Set());
@@ -75,6 +77,24 @@ export const useAudioController = (
         };
     }, [initializeAudioPlayer]);
 
+    const calculateTotalDuration = useCallback(() => {
+        return audioMessages.reduce((total, msg) => {
+            // Calculate duration from audio data: samples / sampleRate
+            const audioData = msg.audio;
+            if (!audioData) return total;
+            
+            // Assuming audio data is Float32Array and sample rate is 16000
+            const sampleRate = 16000;
+            const duration = audioData.length / sampleRate;
+            return total + duration;
+        }, 0);
+    }, [audioMessages]);
+
+    useEffect(() => {
+        const totalDuration = calculateTotalDuration();
+        setAudioState(prev => ({ ...prev, duration: totalDuration }));
+    }, [audioMessages, calculateTotalDuration]);
+
     const playNextChunk = useCallback(async () => {
         if (!audioPlayer.current || currentChunkIndex.current >= audioMessages.length - 1) {
             return;
@@ -93,24 +113,30 @@ export const useAudioController = (
                 onChunkPlayed(chunk.id);
             }
 
-            audioMessages[currentChunkIndex.current].duration = chunkDuration;
-
             accumulatedTime.current = audioMessages
                 .slice(0, currentChunkIndex.current)
-                .reduce((total, msg) => total + (msg.duration || 0), 0);
+                .reduce((total, msg) => {
+                    const audioData = msg.audio;
+                    if (!audioData) return total;
+                    return total + (audioData.length / 16000);
+                }, 0);
             
             playStartTime.current = Date.now();
 
+            // Update total duration based on actual audio data
+            const totalDuration = calculateTotalDuration();
+            
             setAudioState(prev => ({
                 ...prev,
                 isPlaying: true,
                 currentTime: accumulatedTime.current,
+                duration: totalDuration
             }));
         } catch (error) {
             Logger.error('Error playing audio chunk:', error);
             setAudioState(prev => ({ ...prev, isPlaying: false }));
         }
-    }, [audioMessages, onTimeUpdate, onChunkPlayed, isInteractive]);
+    }, [audioMessages, onTimeUpdate, onChunkPlayed, isInteractive, calculateTotalDuration]);
 
     useEffect(() => {
         if (!audioState.isPlaying) return;
@@ -135,15 +161,12 @@ export const useAudioController = (
     }, [audioState.isPlaying, audioState.playbackRate, audioMessages]);
 
     const checkNewMessages = useCallback(() => {
-
         // Add more strict conditions for starting playback
-        if (!audioState.isReady || audioState.isPlaying) {
+        if (!audioState.isReady || audioState.isPlaying || audioState.manuallyPaused) {
             return;
         }
         
         // Only start playing if we have messages and aren't currently playing
-
-
         if(currentChunkIndex.current === 100000) {
             currentChunkIndex.current = audioMessages.length - 1;
         }
@@ -153,7 +176,7 @@ export const useAudioController = (
             Logger.info('Starting playback of new messages');
             playNextChunk();
         }
-    }, [audioMessages, audioState.isPlaying, audioState.isReady, audioState.interrupted, playNextChunk]);
+    }, [audioMessages, audioState.isPlaying, audioState.isReady, audioState.interrupted, audioState.manuallyPaused, playNextChunk]);
 
     useEffect(() => {
         if (checkMessagesInterval.current) {
@@ -218,9 +241,11 @@ export const useAudioController = (
             setAudioState(prev => ({
                 ...prev,
                 isPlaying: false,
-                currentTime: accumulatedTime.current
+                currentTime: accumulatedTime.current,
+                manuallyPaused: true
             }));
         } else {
+            setAudioState(prev => ({ ...prev, manuallyPaused: false }));
             resumePlayback();
         }
     }, [audioState.isPlaying, audioState.playbackRate, resumePlayback, audioMessages]);
