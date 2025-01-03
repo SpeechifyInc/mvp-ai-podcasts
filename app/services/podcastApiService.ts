@@ -11,14 +11,13 @@ export interface PodcastGenerationRequest {
 }
 
 export class PodcastApiService {
-  private static readonly API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080';
 
   public static async generatePodcast(
     formData: PodcastFormData,
     pdfContent: PdfContent
   ): Promise<{ podcastId: string}> {
     try {
-      const response = await fetch(`${this.API_URL}/podcasts`, {
+      const response = await fetch(`https://${process.env.NEXT_PUBLIC_API_URL}/podcasts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
